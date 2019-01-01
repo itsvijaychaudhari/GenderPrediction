@@ -1,0 +1,206 @@
+﻿@model  GenderPrediction.Models.PredictionModel
+@{
+	ViewBag.Title = "Home Page";
+}
+
+<!DOCTYPE html>
+<html >
+<head>
+	<meta charset="UTF-8">
+	<link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+	<link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+	<link href="~/Content/Textbox.css" rel="stylesheet" />
+	<link href="~/Content/RadioButton.css" rel="stylesheet" />
+</head>
+
+<body>
+   
+	<div>	 
+		@Html.HiddenFor(model => model.Suggestedgender, Model.Suggestedgender)
+	</div>
+	<div class="middle" id ="refreshed" >
+		@foreach (var sex in Model.SexList)
+		{
+			if (sex.ID == "1")
+			{
+				<label>
+					@Html.RadioButtonFor(m => m.Gender, sex.ID)
+					<div class="front-end box" style="right: 205px" >
+						<span>Male</span>
+					</div>													 
+				</label>
+			}
+			else
+			{
+				<label>
+					@Html.RadioButtonFor(m => m.Gender, sex.ID)
+					<div class="back-end box" >
+
+						<span>Female</span>
+					</div>
+				</label>
+			}
+		}
+	</div>
+	<div class="row">
+		<div class="centered">
+			<div class="group">
+				@Html.TextBoxFor(m => m.Name, new { @class = "form-control", id = "Textbox", required = "required", @onfocus = "this.value=''" })
+				<label id="name" for="name">Name</label>
+				<div class="bar"></div>
+			</div>
+		</div>
+</div> 	
+
+
+
+
+
+
+@*<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>*@
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+
+<script type="text/javascript">
+
+
+	$(function() {
+		$("input[type='text']").on("focus",function () {
+			$("[type=radio]").removeAttr("checked");
+			$('#refreshed').load(location.href + " #refreshed>*", "");
+		});
+	});
+
+
+	$(function () {
+		$("#Textbox").blur(function () {
+
+			var person = {};
+			person.Name = $("#Textbox").val();
+			$.ajax({
+				type: "POST",
+				url: "@Url.Action("Predict", "Home")",
+				data: '{gender:' + JSON.stringify(person) + '}',
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function(response) {
+					if (response.Suggestedgender === "M") {
+						$('input:radio[name="Gender"]').filter('[value="1"]').attr('checked', true);
+						$("#Suggestedgender").val(response.Suggestedgender);
+
+					} else if (response.Suggestedgender === "F") {
+						$('input:radio[name="Gender"]').filter('[value="2"]').attr('checked', true);
+						$("#Suggestedgender").val(response.Suggestedgender);
+					} else {
+						$(":radio").removeAttr("checked");
+					}
+				},
+				failure: function(response) {
+						
+
+				},
+				error: function(response) {
+						
+				}
+			});
+		});
+	});
+
+	$(function () {
+		$("input[name=Gender]:radio").change(function () {
+			var person = {};
+			person.Name = $("#Textbox").val();
+			person.Currectedgender = $(this).val();
+			person.Suggestedgender = $("#Suggestedgender").val();
+			
+			if (person.Currectedgender === "1") {
+				$(":radio").removeAttr("checked");
+				$('input:radio[name="Gender"]').filter('[value="1"]').attr('checked', true);
+				
+			} else {
+				$(":radio").removeAttr("checked");
+				$('input:radio[name="Gender"]').filter('[value="2"]').attr('checked', true);
+			}
+			
+			$.ajax({
+				type: "POST",
+				url: "@Url.Action("SaveCorrectedAns", "Home")",
+				data: '{gender:' + JSON.stringify(person) + '}',
+				contentType: "application/json; charset=utf-8",
+				success: function (response) {
+				
+				},
+				failure: function(response) {
+					
+					alert(JSON.stringify(response));
+
+				},
+				error: function(response) {
+
+					alert(JSON.stringify(response));
+				}
+			});
+		});
+	});
+
+
+
+
+	//following code use timer function
+
+	@*var textInput = document.getElementById('Textbox');
+	var timeOut = null;
+	textInput.onkeyup = function (e) {
+
+		clearTimeout(timeOut);
+
+		timeOut = setTimeout(function () {
+			var person = {};
+			person.Name = $("#Textbox").val();
+
+			if (person.Name !== "") {
+				$.ajax({
+					type: "POST",
+					url: "@Url.Action("Predict", "Home")",
+					data: '{gender:' + JSON.stringify(person) + '}',
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					success: function (response) {
+						if (response.Suggestedgender === "M") {
+							//$('#Gender').filter('[value="1"]').prop('checked', true);
+							$('input:radio[name="Gender"]').filter('[value="1"]').attr('checked', true);
+							$("#Suggestedgender").val(response.Suggestedgender);
+
+						} else if (response.Suggestedgender === "F") {
+							$('input:radio[name="Gender"]').filter('[value="2"]').attr('checked', true);
+							$("#Suggestedgender").val(response.Suggestedgender);
+						} else {
+							//$(":radio").removeAttr("checked");
+						}
+					},
+					failure: function (response) {
+
+
+					},
+					error: function (response) {
+
+					}
+				});
+			} else {
+				$(":radio").removeAttr("checked");
+			}
+		}, 500);
+
+	};*@
+
+	
+
+
+</script>
+</body>
+</html>
+
+
+
+
+
