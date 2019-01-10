@@ -11,23 +11,18 @@ namespace GenderPrediction.Models
     {
       
         [Required]
+        [RegularExpression("[A-Za-z ]*", ErrorMessage = "Use letters only please")]
         public string Name { get; set; }
         public string Suggestedgender { get; set; }
         public string Currectedgender { get; set; }
         public string genderType { get; set; }
-       
-        public Sex Gender { get; set; }
-
-        public List<Sex> SexList { get; set; }
-
-
         double[] probability;
 
         public PredictionModel GetPredict(PredictionModel gender)
         {
             //PredictionModel getGender = new PredictionModel();
             ApplicationObject appObj = new ApplicationObject();
-            appObj = HttpContext.Current.Application["GobleObject"] as ApplicationObject;
+            appObj = HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject;
 
 
             string test_data = "0";
@@ -167,7 +162,7 @@ namespace GenderPrediction.Models
                 {
                     var array = x[i];
                    
-                    predict = (int)LibLinear.Predict((HttpContext.Current.Application["GobleObject"] as ApplicationObject)?.Model, array,out probability);
+                    predict = (int)LibLinear.Predict((HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject)?.Model, array,out probability);
                     // write.WriteLine(predict);
                 }
             }

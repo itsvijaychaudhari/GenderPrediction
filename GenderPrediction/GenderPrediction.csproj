@@ -46,6 +46,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FANNCSharp, Version=0.1.7.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\FANNCSharp-x64.0.1.8\lib\FANNCSharp.dll</HintPath>
+    </Reference>
     <Reference Include="LibLinear2, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Desktop\LibLinearDotNet-master\LibLinearDotNet-master\LibLinear\bin\Debug\LibLinear2.dll</HintPath>
@@ -154,12 +157,25 @@
     </Compile>
     <Compile Include="Models\ApplicationObject.cs" />
     <Compile Include="Models\GenderType.cs" />
+    <Compile Include="Models\NeuralNet_model.cs" />
     <Compile Include="Models\PredictionModel.cs" />
     <Compile Include="Models\Logger.cs" />
     <Compile Include="Models\Sex.cs" />
+    <Compile Include="Models\Shifted_trigram_model.cs" />
+    <Compile Include="Models\TrigramOnlyModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Probabilities\Bi_F.txt" />
+    <Content Include="App_Data\Probabilities\Bi_M.txt" />
+    <Content Include="App_Data\Probabilities\Tri0_F.txt" />
+    <Content Include="App_Data\Probabilities\Tri0_M.txt" />
+    <Content Include="App_Data\Probabilities\Tri1_F.txt" />
+    <Content Include="App_Data\Probabilities\Tri1_M.txt" />
+    <Content Include="App_Data\Probabilities\Tri2_F.txt" />
+    <Content Include="App_Data\Probabilities\Tri2_M.txt" />
+    <Content Include="App_Data\Probabilities\Uni_F.txt" />
+    <Content Include="App_Data\Probabilities\Uni_M.txt" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -205,9 +221,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -274,7 +288,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\FANNCSharp-x64.0.1.8\build\FANNCSharp-x64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\FANNCSharp-x64.0.1.8\build\FANNCSharp-x64.targets'))" />
   </Target>
+  <Import Project="..\packages\FANNCSharp-x64.0.1.8\build\FANNCSharp-x64.targets" Condition="Exists('..\packages\FANNCSharp-x64.0.1.8\build\FANNCSharp-x64.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
