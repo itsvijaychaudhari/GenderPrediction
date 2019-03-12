@@ -4,67 +4,85 @@
 	Layout = null;//"~/Views/Shared/_Layout.cshtml";
 }
 
-<head>
-	<meta charset="UTF-8">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
-	<link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-	<link href="~/Content/Textbox.css" rel="stylesheet" />
-	<link href="~/Content/RadioButton.css" rel="stylesheet" />
-</head>
-<body>
-	<div >	 
+
+<meta charset="UTF-8">
+<link href="~/Content/Roboto.css" rel="stylesheet" />
+@*<link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>*@
+<link href="~/Content/font-awsome.min.css" rel="stylesheet" />
+@*<link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>*@
+<link href="~/Content/Textbox.css" rel="stylesheet" />
+<link href="~/Content/RadioButton.css" rel="stylesheet" />
+
+
+
+@using (Html.BeginForm())
+{
+	@Html.ValidationSummary(true)
+
+	<div>
 		@Html.HiddenFor(model => model.Suggestedgender, Model.Suggestedgender)
 	</div>
-<div class="middle">
-	
-	<br />
-	@Html.RadioButton("Gender", "Male")
-	<div class="front-end box" style="right: 18px" id="front-end">
-		<label>
-			<span style="left:-40px">Male</span>
-		</label>
-	</div>
-		
-	@Html.RadioButton("Gender", "Female") 
-	<div class="back-end box" style="right: 9px" id="back-end">
-		<label>
-			<span style="left:-55px">Female</span>
-		</label>
-	</div>
-		
-	@Html.RadioButton("Gender", "Both")
-	<div class="Both box" id="box">
-		<label>
-			<span style="left:-40px">Both</span>
-		</label>
-	</div>
-</div>
+	<div class="middle">
 
-@*<div class="row">
-	<div class="centered">
-		<div class="group" style="margin-top:100px">
-			@Html.TextBoxFor(m => m.Name, new { @class = "form-control", id = "Textbox", required = "required", @onfocus = "this.value=''" })
-			<label id="name" for="name">Name</label>
-			<div class="bar"></div>
+		<br />
+		@Html.RadioButton("Gender", "Male")
+		<div class="front-end box" style="right: 18px" id="front-end">
+			<label>
+				<span style="left: -40px">Male</span>
+			</label>
+		</div>
+
+		@Html.RadioButton("Gender", "Female")
+		<div class="back-end box" style="right: 9px" id="back-end">
+			<label>
+				<span style="left: -55px">Female</span>
+			</label>
+		</div>
+
+		@Html.RadioButton("Gender", "Both")
+		<div class="Both box" id="box">
+			<label>
+				<span style="left: -40px">Both</span>
+			</label>
 		</div>
 	</div>
-</div>*@   
 
-<div class="row">
-	<div class="centered">
-		<div class="group">
-			@Html.TextBoxFor(m => m.Name, new { @class = "form-control", id = "Textbox" })
-			@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-			<label id="name" for="name">Name</label>
-			<div class="bar"></div>
+	@*<div class="row">
+			<div class="centered">
+				<div class="group" style="margin-top:100px">
+					@Html.TextBoxFor(m => m.Name, new { @class = "form-control", id = "Textbox", required = "required", @onfocus = "this.value=''" })
+					<label id="name" for="name">Name</label>
+					<div class="bar"></div>
+				</div>
+			</div>
+		</div>*@
+
+	<div class="row">
+		<div class="centered">
+			<div class="group">
+				@Html.TextBoxFor(m => m.Name, new { @class = "form-control", id = "Textbox" })
+				<label id="name" for="name">Name</label>
+				<div class="bar"></div>
+				<div>
+					@Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+				</div>
+
+
+			</div>
 		</div>
 	</div>
-</div> 	
+}
 
-</body>
+
+
+
 
 
 <script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@Scripts.Render("~/bundles/jqueryval")
+
 
 <script type="text/javascript">
 	$("#front-end").click(function() {
@@ -79,11 +97,11 @@
 				url: "@Url.Action("SaveCorrectedAns", "Home")",
 				data: '{gender:' + JSON.stringify(person) + '}',
 				contentType: "application/json; charset=utf-8",
-				success: function (response) {
-					
+				success: function () {
+
 				},
 				failure: function(response) {
-					
+
 					alert(JSON.stringify(response));
 
 				},
@@ -93,7 +111,7 @@
 				}
 			});
 		}
-		
+
 	});
 
 	$("#back-end").click(function () {
@@ -108,11 +126,11 @@
 				url: "@Url.Action("SaveCorrectedAns", "Home")",
 				data: '{gender:' + JSON.stringify(person) + '}',
 				contentType: "application/json; charset=utf-8",
-				success: function (response) {
-					
+				success: function () {
+
 				},
 				failure: function(response) {
-					
+
 					alert(JSON.stringify(response));
 
 				},
@@ -125,7 +143,7 @@
 	});
 
 	$("#box").click(function () {
-	
+
 		$('input:radio[name="Gender"]').filter('[value="Both"]').prop('checked', true);
 		var person = {};
 		person.Name = $("#Textbox").val();
@@ -137,11 +155,11 @@
 				url: "@Url.Action("SaveCorrectedAns", "Home")",
 				data: '{gender:' + JSON.stringify(person) + '}',
 				contentType: "application/json; charset=utf-8",
-				success: function (response) {
-					
+				success: function () {
+
 				},
 				failure: function(response) {
-					
+
 					alert(JSON.stringify(response));
 
 				},
@@ -173,11 +191,11 @@
 				url: "@Url.Action("SaveCorrectedAns", "Home")",
 				data: '{gender:' + JSON.stringify(person) + '}',
 				contentType: "application/json; charset=utf-8",
-				success: function (response) {
-					
+				success: function () {
+
 				},
 				failure: function(response) {
-					
+
 					alert(JSON.stringify(response));
 
 				},
@@ -197,12 +215,11 @@
 			$.ajax({
 				type: "GET",
 				url: "@Url.Action("Predict", "Home")?gender=" + person.Name,
-				success: function (res) {
+				success: function(res) {
 					if (res.Suggestedgender === "Male") {
 						$('input:radio[name="Gender"]').filter('[value="Male"]').prop('checked', true);
 						$("#Suggestedgender").val(res.Suggestedgender);
-					}
-					else if (res.Suggestedgender === "Female") {
+					} else if (res.Suggestedgender === "Female") {
 						$('input:radio[name="Gender"]').filter('[value="Female"]').prop('checked', true);
 						$("#Suggestedgender").val(res.Suggestedgender);
 					} else {
@@ -211,10 +228,10 @@
 						$("#Suggestedgender").val(res.Suggestedgender);
 					}
 				},
-				failure: function (res) {
+				failure: function() {
 					alert("Fail to Predict..!");
 				},
-				error: function (res) {
+				error: function() {
 					alert("Some Error Occured..!");
 				}
 
@@ -222,6 +239,49 @@
 		});
 	});
 
+	$(function () {
+		$('#Textbox').keyup(function (e) {
+			var key = e.which;
+			if (key === 8) {
+				$("input[name=Gender]:radio").prop('checked', false);
+			}
+
+			if (key === 13) // the enter key code
+			{
+				var person = {};
+				person.Name = $('#Textbox').val();
+				$.ajax({
+					type: "GET",
+					url: "@Url.Action("Predict", "Home")?gender=" + person.Name,
+					success: function(res) {
+						if (res.Suggestedgender === "Male") {
+							$('input:radio[name="Gender"]').filter('[value="Male"]').prop('checked', true);
+							$("#Suggestedgender").val(res.Suggestedgender);
+						} else if (res.Suggestedgender === "Female") {
+							$('input:radio[name="Gender"]').filter('[value="Female"]').prop('checked', true);
+							$("#Suggestedgender").val(res.Suggestedgender);
+						} else {
+							if (person.Name !== "")
+								$('input:radio[name="Gender"]').filter('[value="Both"]').prop('checked', true);
+							$("#Suggestedgender").val(res.Suggestedgender);
+						}
+					},
+					failure: function() {
+						alert("Fail to Predict..!");
+					},
+					error: function() {
+						alert("Some Error Occured..!");
+					}
+
+				});
+			}
+
+
+		});
+	});
+
 
 </script>
+
+
 

@@ -1,93 +1,120 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
 namespace GenderPrediction.Models
 {
-    public class NeuralNet_model
+    public class NeuralNetModel
     {
-        string name;
-        Dictionary<string, Dictionary<string, string>> dict = new Dictionary<string, Dictionary<string, string>>();
-        FileInfo[] files;
-        float[] input_features;
-        double[] input_features_double;
-        List<string> all_features = new List<string>();
-        Dictionary<int, ArrayList> dictionary = new Dictionary<int, ArrayList>();
-        int cnt = 1;
+        private readonly string _name;
+        /*
+                private readonly Dictionary<string, Dictionary<string, string>> _dict = new Dictionary<string, Dictionary<string, string>>();
+        */
+        /*
+                private readonly FileInfo[] _files;
+        */
+        private float[] _inputFeatures;
+        /*
+                private readonly double[] _inputFeaturesDouble;
+        */
+        //private readonly List<string> _allFeatures = new List<string>();
+        /*
+                private readonly Dictionary<int, ArrayList> _dictionary = new Dictionary<int, ArrayList>();
+        */
+        private int _cnt = 1;
 
 
-        public NeuralNet_model(string name)
+        public NeuralNetModel(string name)
         {
-            this.name = name;
-           
+            _name = name;
+
         }
-       
+
         //calculate features using NN
-        public void calculateFeaturesForNN()
+        public void CalculateFeaturesForNn()
         {
             //name = textBox.Text;
-            List<string> features = new List<string>();
+            //List<string> features = new List<string>();
             string feature = "";
-            var char_array = name.ToCharArray();
-            Array.Reverse(char_array);
-            float feature_value = 0.0f;
+            char[] charArray = _name.ToCharArray();
+            Array.Reverse(charArray);
             int index = 0;
-            Array.Sort((HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject).files, (f1, f2) => f2.Name.CompareTo(f1.Name));
+            Array.Sort(((ApplicationObject)HttpContext.Current.Application["GobleObjectSVM"]).Files, (f1, f2) => string.Compare(f2.Name, f1.Name, StringComparison.Ordinal));
             string filename = "";
             string loadfile = "";
             Dictionary<string, string> temp = null;
-            input_features = new float[10];
+            _inputFeatures = new float[10];
 
             for (int i = 0; i < 2; i++)
             {
                 #region try
+
+                float featureValue;
                 if (i == 0)
                 {
                     for (int t = i; t < i + 3; t++)
                     {
                         if (t == 0)
+                        {
                             filename = "Uni";
+                        }
                         else if (t == 1)
+                        {
                             filename = "Bi";
+                        }
                         else if (t == 2)
+                        {
                             filename = "Tri0";
+                        }
+
                         for (int k = 0; k < 2; k++)
                         {
                             if (k == 0)
+                            {
                                 loadfile = filename + "_M.txt";
+                            }
                             else if (k == 1)
+                            {
                                 loadfile = filename + "_F.txt";
+                            }
+
                             for (int j = 0; j < t + 1; j++)
                             {
 
-                                if (j == char_array.Length)
+                                if (j == charArray.Length)
                                 {
                                     if (feature.Length == 1)
+                                    {
                                         feature = "**" + feature;
+                                    }
                                     else if (feature.Length == 2)
+                                    {
                                         feature = "*" + feature;
+                                    }
+
                                     break;
                                 }
 
-                                loadfile = string.Join("", (HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject).files.Where(f => f.Name.Equals(loadfile)).ToList());
-                                temp = (HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject).Get(loadfile);
-                                feature = char_array[j] + feature;
+                                loadfile = string.Join("", ((ApplicationObject)HttpContext.Current.Application["GobleObjectSVM"]).Files.Where(f => f.Name.Equals(loadfile)).ToList());
+                                temp = ((ApplicationObject)HttpContext.Current.Application["GobleObjectSVM"]).Get(loadfile);
+                                feature = charArray[j] + feature;
                             }
-                            all_features.Add(feature);
+                            //_allFeatures.Add(feature);
+                            Debug.Assert(temp != null, nameof(temp) + " != null");
                             if (temp.ContainsKey(feature))
                             {
-                                feature_value = float.Parse(temp[feature]);
-                                scaleFeature(ref feature_value);
-                                input_features[index] = feature_value;
+                                featureValue = float.Parse(temp[feature]);
+                                ScaleFeature(ref featureValue);
+                                _inputFeatures[index] = featureValue;
                             }
                             else
                             {
-                                feature_value = 0.0f;
-                                scaleFeature(ref feature_value);
-                                input_features[index] = feature_value;
+                                featureValue = 0.0f;
+                                ScaleFeature(ref featureValue);
+                                _inputFeatures[index] = featureValue;
                             }
 
                             feature = "";
@@ -103,44 +130,60 @@ namespace GenderPrediction.Models
                     for (int t = i; t < i + 2; t++)
                     {
                         if (t == 1)
+                        {
                             filename = "Tri1";
+                        }
                         else if (t == 2)
+                        {
                             filename = "Tri2";
+                        }
+
                         for (int k = 0; k < 2; k++)
                         {
                             if (k == 0)
+                            {
                                 loadfile = filename + "_M.txt";
+                            }
                             else if (k == 1)
+                            {
                                 loadfile = filename + "_F.txt";
+                            }
+
                             for (int j = t; j < t + 3; j++)
                             {
 
-                                if (j == char_array.Length)
+                                if (j == charArray.Length)
                                 {
                                     if (feature.Length == 1)
+                                    {
                                         feature = "**" + feature;
+                                    }
                                     else if (feature.Length == 2)
+                                    {
                                         feature = "*" + feature;
+                                    }
+
                                     break;
                                 }
 
-                                loadfile = string.Join("", (HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject).files.Where(f => f.Name.Equals(loadfile)).ToList());
-                                temp = (HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject).Get(loadfile);
-                                feature = char_array[j] + feature;
+                                loadfile = string.Join("", ((ApplicationObject)HttpContext.Current.Application["GobleObjectSVM"]).Files.Where(f => f.Name.Equals(loadfile)).ToList());
+                                temp = ((ApplicationObject)HttpContext.Current.Application["GobleObjectSVM"]).Get(loadfile);
+                                feature = charArray[j] + feature;
 
                             }
-                            all_features.Add(feature);
+                            //_allFeatures.Add(feature);
+                            Debug.Assert(temp != null, nameof(temp) + " != null");
                             if (temp.ContainsKey(feature))
                             {
-                                feature_value = float.Parse(temp[feature]);
-                                scaleFeature(ref feature_value);
-                                input_features[index] = feature_value;
+                                featureValue = float.Parse(temp[feature]);
+                                ScaleFeature(ref featureValue);
+                                _inputFeatures[index] = featureValue;
                             }
                             else
                             {
-                                feature_value = 0.0f;
-                                scaleFeature(ref feature_value);
-                                input_features[index] = feature_value;
+                                featureValue = 0.0f;
+                                ScaleFeature(ref featureValue);
+                                _inputFeatures[index] = featureValue;
                             }
 
                             feature = "";
@@ -152,14 +195,14 @@ namespace GenderPrediction.Models
             }
         }
 
-        public void scaleFeature(ref float index)
+        private void ScaleFeature(ref float index)
         {
             int upper = 1;
             int lower = -1;
-            ArrayList l = (HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject).paramDictionary[cnt];
+            ArrayList l = ((ApplicationObject)HttpContext.Current.Application["GobleObjectSVM"]).ParamDictionary[_cnt];
             l.Sort();
-            float min = (float)Convert.ToDouble((HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject).paramDictionary[cnt][0]);
-            float max = (float)Convert.ToDouble((HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject).paramDictionary[cnt][1]);
+            float min = (float)Convert.ToDouble(((ApplicationObject)HttpContext.Current.Application["GobleObjectSVM"]).ParamDictionary[_cnt][0]);
+            float max = (float)Convert.ToDouble(((ApplicationObject)HttpContext.Current.Application["GobleObjectSVM"]).ParamDictionary[_cnt][1]);
 
             //index = (index - min) / (max - min);
             if (index == min)
@@ -176,46 +219,37 @@ namespace GenderPrediction.Models
             //if(index != upper && index !=lower)
             index = lower + (((upper - lower) * (index - min)) / (max - min));
 
-            cnt++;
+            _cnt++;
 
         }
 
         //perdict gender using  NN
 
-        public string predictFusionSVM_NN(FANNCSharp.Float.NeuralNet net_csharp)
+        public string predictFusionSVM_NN(FANNCSharp.Float.NeuralNet netCsharp)
         {
-            var calc_out_float = net_csharp.Run(input_features);
+            float[] calcOutFloat = netCsharp.Run(_inputFeatures);
             //double dMaleCoefficient = 0.42;
             //double dFemaleCoefficient = 0.58;
             double dMaleCoefficient = 0.4625;
             double dFemaleCoefficient = 0.5375;
-            calc_out_float[0] = calc_out_float[0] / (calc_out_float[0] + calc_out_float[1]);
-            calc_out_float[1] = calc_out_float[1] / (calc_out_float[0] + calc_out_float[1]);
-            if (calc_out_float[0] > calc_out_float[1])
+            calcOutFloat[0] = calcOutFloat[0] / (calcOutFloat[0] + calcOutFloat[1]);
+            calcOutFloat[1] = calcOutFloat[1] / (calcOutFloat[0] + calcOutFloat[1]);
+            if (calcOutFloat[0] > calcOutFloat[1])
             {
-                if (calc_out_float[0] >= dMaleCoefficient)
+                if (calcOutFloat[0] >= dMaleCoefficient)
                 {
-                    return "M " + calc_out_float[0];
+                    return "M " + calcOutFloat[0];
                 }
 
-                else
-                {
-                    return "Both " + calc_out_float[0];
-                }
-
+                return "Both " + calcOutFloat[0];
             }
-
-            else if (calc_out_float[1] > calc_out_float[0])
+            if (calcOutFloat[1] > calcOutFloat[0])
             {
-                if (calc_out_float[1] >= dFemaleCoefficient)
+                if (calcOutFloat[1] >= dFemaleCoefficient)
                 {
-                    return "F " + calc_out_float[1];
+                    return "F " + calcOutFloat[1];
                 }
-                else
-                {
-                    return "Both " + calc_out_float[1];
-                }
-
+                return "Both " + calcOutFloat[1];
             }
             return "";
 

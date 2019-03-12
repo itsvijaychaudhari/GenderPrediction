@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using LibLinearDotNet;
@@ -8,28 +9,26 @@ namespace GenderPrediction.Models
 {
     public class TrigramOnlyModel
     {
-        string name = "";
-        ApplicationObject appObj = new ApplicationObject();
-        string[] new_lines;
+        string _name;
+        string[] _newLines;
 
         public TrigramOnlyModel(string name)
         {
-            this.name = name;
-            appObj = HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject;
-            new_lines = appObj.lines;
+            _name = name;
+            ApplicationObject appObj = HttpContext.Current.Application["GobleObjectSVM"] as ApplicationObject;
+            _newLines = appObj?.Lines;
         }
 
         public string getTestData_trigram_only()
         {
-            bool skip = false;
             List<int> indices = new List<int>();
-            int a = 0;
+            int a;
             List<string> features = new List<string>();
             string feature = "";
             string suffix = "";
-            string test_data = "0";
-            var char_array = name.ToCharArray();
-            Array.Reverse(char_array);
+            string testData = "0";
+            var charArray = _name.ToCharArray();
+            Array.Reverse(charArray);
             for (int i = 0; i < 3; i++)
             {
                 if (i == 0)
@@ -42,9 +41,9 @@ namespace GenderPrediction.Models
                 for (int j = i; j < i + 3; j++)
                 {
                     var result = feature.Split('_');
-                    if (j == char_array.Length)
+                    if (j == charArray.Length)
                         break;
-                    feature = char_array[j].ToString() + result[0];
+                    feature = charArray[j].ToString() + result[0];
                 }
                 feature = feature + suffix;
                 features.Add(feature);
@@ -52,15 +51,14 @@ namespace GenderPrediction.Models
             }
             foreach (var item in features)
             {
-                if (new_lines.Contains(item.ToString()))
+                if (_newLines.Contains(item))
                 {
-                    a = Array.IndexOf(new_lines, item.ToString());
+                    a = Array.IndexOf(_newLines, item);
                     indices.Add(a + 1);
                 }
                 else
                 {
                     // write1.WriteLine(item.ToString() + "\tTrigram-Only");
-                    skip = true;
                 }
             }
             //if (vowels.Contains(last_one))
@@ -74,27 +72,27 @@ namespace GenderPrediction.Models
                 foreach (int i in indices)
                 {
                     if (i != 0)
-                        test_data = test_data + " " + i + ":" + 1;
+                        testData = testData + " " + i + ":" + 1;
                 }
             }
             // write1.Close();
-            return test_data;
+            return testData;
 
         }
 
-        private Problem ReadTestData(string test_data, double bias)
+        private Problem ReadTestData(string testData, double bias)
         {
             var x = new List<FeatureNode[]>();
             var y = new List<double>();
             //  var lines = File.ReadAllLines(path);
 
-            var test_dataParts = test_data.Split(' ');
-            y.Add(double.Parse(test_dataParts[0]));
+            var testDataParts = testData.Split(' ');
+            y.Add(double.Parse(testDataParts[0]));
 
             var nodes = new List<FeatureNode>();
-            for (var i = 1; i <= test_dataParts.Length - 1; i++)
+            for (var i = 1; i <= testDataParts.Length - 1; i++)
             {
-                var token = test_dataParts[i].Trim().Split(':');
+                var token = testDataParts[i].Trim().Split(':');
                 nodes.Add(new FeatureNode
                 {
                     Index = int.Parse(token[0]),
@@ -107,15 +105,14 @@ namespace GenderPrediction.Models
         }
 
 
-        public string predictFusion(Model model, string test_data, double dMaleCoefficient, double dFemaleCoefficient)
+        public string PredictFusion(Model model, string testData, double dMaleCoefficient, double dFemaleCoefficient)
         {
-            Problem p = null;
-            var test = p;
+            Problem test;
             double bias = -1.0;
             var predict = 0;
             double[] prob = null;
-            if (test_data != "0")
-                test = ReadTestData(test_data, bias);
+            if (testData != "0")
+                test = ReadTestData(testData, bias);
             else
             {
                 //if (!MainWindow.isLoading)
@@ -130,9 +127,10 @@ namespace GenderPrediction.Models
                 predict = (int)LibLinear.Predict(model, array, out prob);
             }
 
-            double greater = 0.0;
+            double greater;
             //double dMaleCoefficient = 58;
             //double dFemaleCoefficient = 63;
+            Debug.Assert(prob != null, nameof(prob) + " != null");
             if (prob[0] > prob[1])
                 greater = Convert.ToInt16(prob[0] * 100);
             else

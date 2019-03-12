@@ -1,51 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using log4net;
+﻿using log4net;
 
 namespace GenderPrediction.Models
 {
     public enum LogLevel
     {
-        DEBUG = 0,
-        INFO = 1,
-        WARN = 2,
-        ERROR = 3,
-        FATAL = 4
+        Debug = 0,
+        Info = 1,
+        Warn = 2,
+        Error = 3,
+        Fatal = 4
     }
 
     public static  class Logger
     {
-        public static string ip;
-        public static int reqCount=0;
+        public static string Ip;
+        public static int ReqCount=0;
         public static void LogMsg( LogLevel level, object msg)
         {
            
-            log4net.GlobalContext.Properties["LogFileName"] = "Data.log";
+            GlobalContext.Properties["LogFileName"] = "Data.log";
             log4net.Config.XmlConfigurator.Configure();
 
             ILog log = LogManager.GetLogger(typeof(Logger));
 
             switch (level)
             {
-                case LogLevel.DEBUG:
+                case LogLevel.Debug:
                     log.Debug(msg);
                     break;
 
-                case LogLevel.INFO:
+                case LogLevel.Info:
                     log.Info(msg);
                     break;
 
-                case LogLevel.WARN:
+                case LogLevel.Warn:
                     log.Warn(msg);
                     break;
 
-                case LogLevel.ERROR:
+                case LogLevel.Error:
                     log.Error(msg);
                     break;
 
-                case LogLevel.FATAL:
+                case LogLevel.Fatal:
                     log.Fatal(msg);
                     break;
             }

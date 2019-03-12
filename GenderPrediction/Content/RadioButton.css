@@ -14,7 +14,7 @@
 		}
 
 			.middle input[type="radio"]:checked + .box span:before {
-				transform: translateY(0px);
+				transform: translateY(0);
 				opacity: 1;
 			}
 
@@ -58,7 +58,7 @@
 				color: white;
 			}
 
-	.middle .front-end span:before {
+	/*.middle .front-end span:before {
 		content: '\f183';
 	}
 
@@ -67,4 +67,4 @@
 	}
 	.middle .Both span:before {
 		content: '\f059';
-	}
+	}*/

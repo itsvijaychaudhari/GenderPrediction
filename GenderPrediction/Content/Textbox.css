@@ -27,6 +27,7 @@ body {
 label {
 	position: absolute;
 	top: 36.66667px;
+	color: #ffffff;
 	color: rgba(255, 255, 255, 0.5);
 	font: 400 26px Roboto;
 	cursor: text;
@@ -47,8 +48,10 @@ input {
 input:valid ~ label {
 	top: 0;
 	font: 700 22px Roboto;
+	color: #ffffff;
 	color: rgba(255, 255, 255, 0.5);
 }
+
 input:focus {
 	outline: none;
 }
@@ -61,11 +64,12 @@ input:focus ~ .bar:before {
 	transform: translateX(0);
 }
 input:-webkit-autofill {
-	-webkit-box-shadow: 0 0 0px 1000px #333 inset;
+	-webkit-box-shadow: 0 0 0 1000px #333 inset;
 	-webkit-text-fill-color: white !important;
 }
 
 .bar {
+	background: #ffffff;
 	background: rgba(255, 255, 255, 0.5);
 	content: '';
 	width: 550px;
@@ -73,6 +77,7 @@ input:-webkit-autofill {
 	transition: .3s ease;
 	position: relative;
 }
+
 .bar:before {
 	content: '';
 	position: absolute;
@@ -83,5 +88,6 @@ input:-webkit-autofill {
 }
 
 ::selection {
+	background: #2196f3;
 	background: rgba(33, 150, 243, 0.3);
 }
